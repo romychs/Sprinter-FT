@@ -10,7 +10,7 @@
 
 [Файлы для производства](Export/Gerbers/Sprinter-FT_v1.0.0.zip)
 
-![image](Export/render.png)
+![image](Export/preview.png)
 
 [Спринтер в Телеграм](https://t.me/zx_sprinter)
 
