@@ -72,42 +72,66 @@ MAIN_LOOP
 	; Find FT
 	CALL	FT.FT_FIND
 	LD		HL, MSG_NO_FT
-	JR		C, MSG_FNF_OUT
+	JR		C, MSG_NF_OUT
 	; FT is Found
-	LD		A, (ISA.ISA_SLOT)
-	INC		A
-	LD		L, A
-	LD		H, 0
-	LD		DE, MSG_SLOT_NO
-	CALL	UTIL.FAST_UTOA
-	LD		HL, MSG_IS_FT
-	; Out message about FT slot
-MSG_FNF_OUT
-	PRINTLN_HL
+	;	A = ISA slot
+	ADD		A, '1'										; 0x31
+	LD		(MSG_SLOT_NO), A
+	PRINTLN MSG_IS_FT
+
+	; Activate
+	;CALL	FT.FT_ACTIVATE
+	LD		A, FT_MODE_800_600_60
+	CALL	FT.FT_INIT
+
+	; Get FT chip info
+	PRINTLN MSG_GET_CHIP_ID
+	CALL	FT.FT_GET_CHIP_ID
+
+	LD		HL, FT.FT_BUFFER
+	LD	 	DE, MSG_CTB
+	LD		B, 4
+.NXT_ID
+	LD		C, (HL)
+	CALL	UTIL.HEXB
+	INC		HL
+	DJNZ	.NXT_ID
+	PRINTLN MSG_CHIP_TYPE
 
 
+; ------------------------------------------------------
 OK_EXIT
-	LD		B,0
+	LD		B, 0
+NOK_EXIT
 	DSS_EXEC    DSS_EXIT
+
+	; Out message about FT slot
+MSG_NF_OUT
+	PRINTLN_HL
+	LD		B, 1
+	JR		NOK_EXIT
 
 ; ------------------------------------------------------
 ; Custom messages
 ; ------------------------------------------------------
 
 MSG_START
-	DB "FTTest for Sprinter-FT by Sprinter Team. v1.0.b1, ", __DATE__, "\r\n", 0
+	DB "Sprinter-FT tester by Sprinter Team. v1.0.b1, ", __DATE__, "\r\n", 0
 
 MSG_NO_FT
-	DB "Sprinter-FT not found!",0
+	DB "Sprinter-FT not found!", 0
 
-
+MSG_GET_CHIP_ID
+	DB "Read Chip Identification Code", 0
 MSG_IS_FT
-	DB "Sprinter-FT found at ISA"
+	DB "Sprinter-FT found at ISA-"
 MSG_SLOT_NO
-	DB 0,0,0
+	DB 0, 0
 
-;MSG_EXIT
-;	DB "Bye!",0
+MSG_CHIP_TYPE
+	DB "Chip type bytes: 0x"
+MSG_CTB
+	DS	9, 0
 
 ; ------------------------------------------------------
 ; Custom commands

@@ -266,6 +266,25 @@ DIV_10:
 	POP		BC
 	RET
 	;;ENDIF
+
+; ------------------------------------------------------
+; Multiplication by 10
+; Inp: HL - number;
+; Out: BC - result;
+; ------------------------------------------------------
+MUL_10
+	ADD		HL, HL
+	ADD		HL, HL
+	LD		B, H
+	LD		C, L										; BC = HL*4
+	ADD		HL, HL
+	ADD		HL, HL										; HL*16
+	ADD		HL, BC
+	LD		B, H
+	LD		C, L
+	RET
+
+
 ; ------------------------------------------------------
 ; FAST_UTOA
 ;	Inp:	HL - number;
@@ -375,8 +394,9 @@ STRCHR
 
 ; ------------------------------------------------------
 ; Convert Byte to hex
-;	Inp: C
-;	Out: (DE)
+;	Inp: C - byte to convert;
+;		 DE -> buffer for string;
+;	Out: DE -> points after last char
 ; ------------------------------------------------------
 HEXB
 	LD		A,C
